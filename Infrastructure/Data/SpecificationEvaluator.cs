@@ -10,6 +10,8 @@ public class SpecificationEvaluator<T> where T : BaseEntity
         if (specification.Criteria != null) query = query.Where(specification.Criteria); // x => x.Brand == brand
         if (specification.OrderBy != null) query = query.OrderBy(specification.OrderBy);
         if (specification.OrderByDescending != null) query = query.OrderByDescending(specification.OrderByDescending);
+        if (specification.IsDistinct) query = query.Distinct();
+        if (specification.IsPagingEnabled) query = query.Skip(specification.Skip).Take(specification.Take);
 
         return query;
     }
@@ -25,8 +27,8 @@ public class SpecificationEvaluator<T> where T : BaseEntity
         var selectQuery = query as IQueryable<TResult>;
 
         if (specification.Select != null) selectQuery = query.Select(specification.Select);
-
         if (specification.IsDistinct) selectQuery = selectQuery?.Distinct();
+        if (specification.IsPagingEnabled) selectQuery = selectQuery?.Skip(specification.Skip).Take(specification.Take);
 
         return selectQuery ?? query.Cast<TResult>();
     }

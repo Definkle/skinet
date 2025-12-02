@@ -5,17 +5,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class ProductsController(IGenericRepository<Product> productRepository) : ControllerBase
+public class ProductsController(IGenericRepository<Product> productRepository) : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts(string? brand, string? type, string? sort)
+    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts(
+        [FromQuery] ProductSpecificationParams productSpecificationParams)
     {
-        var specification = new ProductSpecification(brand, type, sort);
-        var products = await productRepository.GetAllWithSpec(specification);
+        var specification = new ProductSpecification(productSpecificationParams);
 
-        return Ok(products);
+        return await CreatePagedResult(productRepository, specification, productSpecificationParams.PageIndex,
+            productSpecificationParams.PageSize);
     }
 
     [HttpGet("{id:int}")] // api/products/1
