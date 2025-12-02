@@ -22,6 +22,8 @@ public class BaseSpecification<T> : ISpecification<T>
 
     public Expression<Func<T, object>>? OrderByDescending { get; private set; }
 
+    public bool IsDistinct { get; private set; }
+
     protected void AddInclude(Expression<Func<T, object>> includeExpression)
     {
         Includes.Add(includeExpression);
@@ -36,4 +38,19 @@ public class BaseSpecification<T> : ISpecification<T>
     {
         OrderByDescending = orderByDescExpression;
     }
+
+    protected void ApplyDistinct()
+    {
+        IsDistinct = true;
+    }
+}
+
+public class BaseSpecification<T, TResult> : BaseSpecification<T>, ISpecification<T, TResult>
+{
+    public BaseSpecification(Expression<Func<T, TResult>> select)
+    {
+        Select = select;
+    }
+
+    public Expression<Func<T, TResult>>? Select { get; }
 }

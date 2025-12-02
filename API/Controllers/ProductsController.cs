@@ -7,7 +7,7 @@ namespace API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProductsController(IGenericRepository<Product> repo, IProductRepository productRepository) : ControllerBase
+public class ProductsController(IGenericRepository<Product> repo) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts([FromQuery] ProductSpecParams specParams)
@@ -26,13 +26,15 @@ public class ProductsController(IGenericRepository<Product> repo, IProductReposi
     [HttpGet("brands")]
     public async Task<ActionResult<IReadOnlyList<string>>> GetBrands()
     {
-        return Ok(await productRepository.GetBrandsAsync());
+        var spec = new BrandListSpecification();
+        return Ok(await repo.ListAsync(spec));
     }
 
     [HttpGet("types")]
     public async Task<ActionResult<IReadOnlyList<string>>> GetTypes()
     {
-        return Ok(await productRepository.GetTypesAsync());
+        var spec = new TypeListSpecification();
+        return Ok(await repo.ListAsync(spec));
     }
 
     [HttpPost]
